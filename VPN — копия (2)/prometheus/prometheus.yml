@@ -1,0 +1,13 @@
+
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'fastapi_backend'
+    static_configs:
+      - targets: ['api:8000']
+
+  - job_name: 'vpn_nodes'
+    # В продакшене тут service discovery через API провайдера
+    static_configs:
+      - targets: ['node1_ip:9100', 'node2_ip:9100']

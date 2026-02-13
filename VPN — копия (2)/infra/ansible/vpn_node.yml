@@ -1,0 +1,27 @@
+
+- name: Setup VPN Node
+  hosts: vpn_gateways
+  become: yes
+  tasks:
+    - name: Install WireGuard and dependencies
+      apt:
+        name: [wireguard, python3-pip, prometheus-node-exporter]
+        state: present
+
+    - name: Setup WireGuard Interface
+      template:
+        src: wg0.conf.j2
+        dest: /etc/wireguard/wg0.conf
+      notify: Restart WG
+
+    - name: Install Metrics Agent
+      copy:
+        src: agent.py
+        dest: /opt/vpn_agent.py
+      # Агент отдает JSON с нагрузкой и списком пиров
+
+  handlers:
+    - name: Restart WG
+      systemd:
+        name: wg-quick@wg0
+        state: restarted
